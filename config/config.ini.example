@@ -1,0 +1,7 @@
+; config/config.ini
+
+[database]
+database_hostname=localhost
+database_name=dbname
+database_username=username
+database_password=pw
