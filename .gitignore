@@ -58,4 +58,4 @@ typings/
 .env
 
 Configfiles
-smarthome/config/*.config
+*.config
