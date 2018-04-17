@@ -58,4 +58,4 @@ typings/
 .env
 
 Configfiles
-*.config
+*.ini
