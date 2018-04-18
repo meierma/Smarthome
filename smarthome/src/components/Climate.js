@@ -17,21 +17,37 @@ class Climate extends Component {
   }
 
   componentDidMount() {
-    var promise = axios.get(URL,{
+    var promiseGetSensors = axios.get(URL,{
       params: {
         Call: 'getSensors',
       }
     });
 
-    promise.then((response)=>{
-            this.setState(()=>{
-               return {
-                 sensorData: response.data
-               }
-            })
+    var sensorData;
+    promiseGetSensors.then((response)=>{
+          sensorData = response.data;
         }).catch((error) =>{
         alert(error)
       });
+
+      var promiseHistoryTemp = axios.get(URL,{
+        params: {
+          Call: 'getHistoryTempHum',
+          range: 'now',
+          TSensor_ID: sensorData[0].TSensor_ID
+        }
+      });
+
+      promiseHistoryTemp.then((response)=>{
+              this.setState(()=>{
+                 return {
+                   sensorData: sensorData,
+                   climateData: response.data
+                 }
+              })
+          }).catch((error) =>{
+          alert(error)
+        });
   }
 
   render() {
