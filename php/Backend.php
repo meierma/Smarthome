@@ -3,7 +3,7 @@
 $Call = $_GET['Call'];
 
 //-----------------Login MySQL Server-----------------
-$config = parse_ini_file("../config/config.ini");
+$config = parse_ini_file("../../config/config.ini");
 
 $MySQL_IP = $config["database_hostname"];
 $MySQL_Username = $config["database_username"];

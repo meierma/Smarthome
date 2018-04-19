@@ -6,7 +6,7 @@ $Call = $_GET['Call'];
 
 //-----------------Login MySQL Server-----------------
 
-$config = parse_ini_file("../config/config.ini");
+$config = parse_ini_file("../../config/config.ini");
 
 $MySQL_IP = $config["database_hostname"];
 $MySQL_Username = $config["database_username"];
@@ -50,6 +50,9 @@ function getSensorData($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_Datab
 
 function getHistoryTempHum($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_Database)
 {
+  $range = $_GET['range'];
+  $arr[] = array();
+
   if($range == "now"){
     $arr[] = getClientDataNow($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_Database);
   }
@@ -74,12 +77,12 @@ function initClimate($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_Databas
 {
   $sensorDataArr[] = getSensorData($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_Database);
 
+
 }
 
 function getClientDataNow($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_Database)
 {
   $TSensor_ID = $_GET['TSensor_ID'];
-  $range = $_GET['range'];
   $con = mysqli_connect($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_Database);
 
   $sql = "SELECT Timestamp, Temperature, Humidity FROM tempHistory WHERE TSensor_ID= $TSensor_ID ORDER BY timestamp DESC Limit 1";
@@ -105,7 +108,6 @@ function getClientDataNow($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_Da
 function getClientDataDay($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_Database)
 {
   $TSensor_ID = $_GET['TSensor_ID'];
-  $range = $_GET['range'];
   $con = mysqli_connect($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_Database);
 
   $sql = "SELECT HOUR(`Timestamp`) as \"Hour\", AVG(`Temperature`) as \"Temp\", AVG(`Humidity`) as \"Hum\" FROM `tempHistory` WHERE `TSensor_ID` = '$TSensor_ID' AND DATE(`timestamp`) = CURDATE() GROUP BY HOUR(`Timestamp`)";
@@ -130,7 +132,6 @@ function getClientDataDay($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_Da
 function getClientDataWeek($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_Database)
 {
   $TSensor_ID = $_GET['TSensor_ID'];
-  $range = $_GET['range'];
   $con = mysqli_connect($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_Database);
 
   $sql = "SELECT DAY(`Timestamp`) as \"Day\", AVG(`Temperature`) as \"Temp\", AVG(`Humidity`) as \"Hum\" FROM `tempHistory` WHERE `TSensor_ID` = '$TSensor_ID' AND WEEK(`Timestamp`) = WEEK(CURDATE()) GROUP BY DAY(`Timestamp`), MONTH('Timestamp')";
@@ -155,7 +156,6 @@ function getClientDataWeek($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_D
 function getClientDataMonth($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_Database)
 {
   $TSensor_ID = $_GET['TSensor_ID'];
-  $range = $_GET['range'];
   $con = mysqli_connect($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_Database);
 
   $sql = "SELECT WEEK(`Timestamp`) as \"Week\", AVG(`Temperature`) as \"Temp\", AVG(`Humidity`) as \"Hum\" FROM `tempHistory` WHERE `TSensor_ID` = '$TSensor_ID' AND MONTH(`Timestamp`) = MONTH(CURDATE()) GROUP BY WEEK(`Timestamp`)";
@@ -180,7 +180,6 @@ function getClientDataMonth($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_
 function getClientDataYear($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_Database)
 {
   $TSensor_ID = $_GET['TSensor_ID'];
-  $range = $_GET['range'];
   $con = mysqli_connect($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_Database);
 
   $sql = "SELECT MONTH(Timestamp) as \"Month\", AVG(`Temperature`) as \"Temp\" , AVG(`Humidity`) as \"Hum\" FROM `tempHistory` WHERE `TSensor_ID` = '$TSensor_ID' AND YEAR(`Timestamp`) = YEAR(CURDATE()) GROUP BY MONTH(`Timestamp`)";
