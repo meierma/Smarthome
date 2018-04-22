@@ -6,7 +6,7 @@ import Line from './Line.js';
 
 import axios from 'axios'
 
-const URL = "http://192.168.0.152/php/TemperatureNew.php"
+const URL = "/php/TemperatureNew.php"
 
 class Climate extends Component {
   constructor(){
