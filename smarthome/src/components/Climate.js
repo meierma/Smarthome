@@ -48,7 +48,7 @@ class Climate extends Component {
 
     return (
       <div className="climate">
-        <label htmlFor="sensorDropdown">Select Sensor</label>
+        <h2>Select Sensor</h2>
         <select id="sensorDropdown" onChange={this.sensorChanged} value={this.state.value}>
            {this.state.sensorData.map(sensor => <option key={sensor.TSensor_Name} value={sensor.TSensor_ID}>{sensor.TSensor_Name}</option>)}
         </select>
