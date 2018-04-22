@@ -2,21 +2,21 @@ import React from 'react';
 import ChartistGraph from 'react-chartist';
 
 class Line extends React.Component {
+
   render() {
 
+
+
     var simpleLineChartData = {
-      labels: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-      series: [
-        [12, 9, 7, 8, 5],
-        [2, 1, 3.5, 7, 3],
-        [1, 3, 4, 5, 6]
-      ]
+      labels: this.props.data.labels,
+      series: [this.props.data.data]
     };
 
     var type = 'Line';
 
     return (
       <div>
+        <h2>{this.props.headline}</h2>
         <ChartistGraph data={simpleLineChartData} type={type} />
       </div>
     )

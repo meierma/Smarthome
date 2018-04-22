@@ -3,10 +3,11 @@ import ChartistGraph from 'react-chartist';
 import ChartistFillDonut from 'chartist-plugin-fill-donut';
 
 class Pie extends React.Component {
-  render() {
 
+  render() {
+    var value = parseFloat(this.props.climateValue);
     var data = {
-      series: [60,100-60]
+      series: [value,100-value],
     };
 
     var options = {
@@ -18,7 +19,7 @@ class Pie extends React.Component {
       showLabel: true,
       fillClass: 'ct-fill-donut',
       label : {
-          html: '<div class="ct-fill-donut-label"></div>',
+        html: '<div class="ct-fill-donut-label"></div>',
       },
       items : [{
         class : '',
@@ -27,18 +28,17 @@ class Pie extends React.Component {
         position: 'center', //bottom, top, left, right
         offsetY: 0, //top, bottom in px
         offsetX: 0 //left, right in px
-    }],
+      }],
     };
 
-    var type = 'Pie'
-
+    var type = 'Pie';
     return (
       <div>
         <ChartistGraph data={data} options={options} type={type} >
           <ChartistFillDonut/>
         </ChartistGraph>
       </div>
-    )
+    );
   }
 }
 

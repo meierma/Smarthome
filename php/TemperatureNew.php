@@ -1,4 +1,6 @@
 <?php
+header('Access-Control-Allow-Origin: http://localhost:3000');
+header('Access-Control-Allow-Credentials: true');
 ini_set('display_errors', 'On');
 error_reporting(E_ALL);
 
@@ -16,11 +18,12 @@ $MySQL_Database = $config["database_name"];
 
 if($Call == "getSensors"){ getSensors($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_Database); }
 if($Call == "getHistoryTempHum"){ getHistoryTempHum($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_Database); }
+if($Call == "initClimateData"){ initClimateData($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_Database); }
 
 
 function getSensors($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_Database)
 {
-  $arr[] = getSensorData($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_Database);
+  $arr = getSensorData($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_Database);
   echo json_encode($arr);
 }
 
@@ -41,7 +44,7 @@ function getSensorData($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_Datab
     $TSensor_Name = stripcslashes(utf8_encode($TSensor_Name));
     $TSensor_Description = stripcslashes(utf8_encode($TSensor_Description));
 
-    $arr[] = array('TSensor_ID' => $TSensor_ID, 'Device_ID' => $Device_ID, 'TSensor_Name' => $TSensor_Name, 'TSensor_Description' => $TSensor_Description);
+    $arr = array('TSensor_ID' => $TSensor_ID, 'Device_ID' => $Device_ID, 'TSensor_Name' => $TSensor_Name, 'TSensor_Description' => $TSensor_Description);
 
   }
   mysqli_close($con);
@@ -51,38 +54,41 @@ function getSensorData($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_Datab
 function getHistoryTempHum($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_Database)
 {
   $range = $_GET['range'];
-  $arr[] = array();
+  $sensorId = $_GET['sensorId'];
+  $arr = array();
 
   if($range == "now"){
-    $arr[] = getClientDataNow($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_Database);
+    $arr = getClimateDataNow($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_Database, $sensorId );
   }
   else if($range == "year"){
-    $arr[] = getClientDataYear($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_Database);
+    $arr = getClimateDataYear($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_Database, $sensorId );
   }
   else if($range == "month"){
     //SELECT MONTH(`Timestamp`) as Month, DAY(`Timestamp`) as Day, AVG(`Temperature`) as Temp, AVG(`Humidity`) as Hum FROM `tempHistory` WHERE `TSensor_ID` = 1 AND YEAR(`Timestamp`) = YEAR(CURDATE()) GROUP BY MONTH(`Timestamp`),DAY(`Timestamp`)
-    $arr[] = getClientDataMonth($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_Database);
+    $arr = getClimateDataMonth($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_Database, $sensorId);
   }
   else if($range == "week"){
-    $arr[] = getClientDataWeek($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_Database);
+    $arr = getClimateDataWeek($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_Database, $sensorId);
   }
   else if($range == "day"){
-    $arr[] = getClientDataDay($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_Database);
+    $arr = getClimateDataDay($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_Database, $sensorId);
   }
 
   echo json_encode($arr);
 }
 
-function initClimate($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_Database)
+function initClimateData($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_Database)
 {
-  $sensorDataArr[] = getSensorData($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_Database);
+  $climateData['sensorDataArr'] = getSensorData($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_Database);
+  //print_r( $sensorDataArr['sensorDataArr']['TSensor_ID'] );
+  $climateData['climateDataNow'] = getClimateDataNow($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_Database, $climateData['sensorDataArr']['TSensor_ID']);
+  $climateData['climateDataDay'] = getClimateDataDay($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_Database, $climateData['sensorDataArr']['TSensor_ID']);
 
-
+  echo json_encode($climateData);
 }
 
-function getClientDataNow($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_Database)
+function getClimateDataNow($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_Database, $TSensor_ID )
 {
-  $TSensor_ID = $_GET['TSensor_ID'];
   $con = mysqli_connect($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_Database);
 
   $sql = "SELECT Timestamp, Temperature, Humidity FROM tempHistory WHERE TSensor_ID= $TSensor_ID ORDER BY timestamp DESC Limit 1";
@@ -99,15 +105,14 @@ function getClientDataNow($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_Da
     $Humidity = stripcslashes(utf8_encode($Humidity));
 
 
-    $arr[] = array('Timestamp' => $Timestamp, 'Temperature' => $Temperature, 'Humidity' => $Humidity);
+    $arr = array('Timestamp' => $Timestamp, 'Temperature' => $Temperature, 'Humidity' => $Humidity);
   }
   mysqli_close($con);
   return $arr;
 }
 
-function getClientDataDay($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_Database)
+function getClimateDataDay($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_Database, $TSensor_ID )
 {
-  $TSensor_ID = $_GET['TSensor_ID'];
   $con = mysqli_connect($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_Database);
 
   $sql = "SELECT HOUR(`Timestamp`) as \"Hour\", AVG(`Temperature`) as \"Temp\", AVG(`Humidity`) as \"Hum\" FROM `tempHistory` WHERE `TSensor_ID` = '$TSensor_ID' AND DATE(`timestamp`) = CURDATE() GROUP BY HOUR(`Timestamp`)";
@@ -129,7 +134,7 @@ function getClientDataDay($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_Da
   return $arr;
 }
 
-function getClientDataWeek($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_Database)
+function getClimateDataWeek($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_Database, $TSensor_ID )
 {
   $TSensor_ID = $_GET['TSensor_ID'];
   $con = mysqli_connect($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_Database);
@@ -153,7 +158,7 @@ function getClientDataWeek($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_D
   return $arr;
 }
 
-function getClientDataMonth($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_Database)
+function getClimateDataMonth($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_Database, $TSensor_ID )
 {
   $TSensor_ID = $_GET['TSensor_ID'];
   $con = mysqli_connect($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_Database);
@@ -177,7 +182,7 @@ function getClientDataMonth($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_
   return $arr;
 }
 
-function getClientDataYear($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_Database)
+function getClimateDataYear($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_Database, $TSensor_ID )
 {
   $TSensor_ID = $_GET['TSensor_ID'];
   $con = mysqli_connect($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_Database);
