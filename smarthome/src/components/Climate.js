@@ -6,7 +6,7 @@ import Line from './Line.js';
 
 import axios from 'axios'
 
-const URL = "/php/TemperatureNew.php"
+const URL = "http://192.168.0.152/php/TemperatureNew.php"
 
 class Climate extends Component {
   constructor(){
@@ -50,7 +50,10 @@ class Climate extends Component {
       <div className="climate">
         <h2>Select Sensor</h2>
         <select id="sensorDropdown" onChange={this.sensorChanged} value={this.state.value}>
-           {this.state.sensorData.map(sensor => <option key={sensor.TSensor_Name} value={sensor.TSensor_ID}>{sensor.TSensor_Name}</option>)}
+           {this.state.sensorData.map(sensor =>
+             <option key={sensor.TSensor_Name} value={sensor.TSensor_ID}>
+               {sensor.TSensor_Name}
+             </option>)}
         </select>
         <div className="chart-pie flex-container">
           <Pie climateValue={this.state.climateDataNow.Temperature}/>

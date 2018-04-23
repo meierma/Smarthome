@@ -17,18 +17,6 @@ class Pie extends React.Component {
       startAngle: 270,
       total: 200,
       showLabel: true,
-      fillClass: 'ct-fill-donut',
-      label : {
-        html: '<div class="ct-fill-donut-label"></div>',
-      },
-      items : [{
-        class : '',
-        id: '',
-        content : 'fillText',
-        position: 'center', //bottom, top, left, right
-        offsetY: 0, //top, bottom in px
-        offsetX: 0 //left, right in px
-      }],
     };
 
     var type = 'Pie';
