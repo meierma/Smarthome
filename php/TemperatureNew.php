@@ -19,6 +19,7 @@ $MySQL_Database = $config["database_name"];
 if($Call == "getSensors"){ getSensors($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_Database); }
 if($Call == "getHistoryTempHum"){ getHistoryTempHum($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_Database); }
 if($Call == "initClimateData"){ initClimateData($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_Database); }
+if($Call == "reinitClimateData"){ reinitClimateData($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_Database); }
 
 
 function getSensors($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_Database)
@@ -77,10 +78,18 @@ function getHistoryTempHum($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_D
   echo json_encode($arr);
 }
 
+function reinitClimateData($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_Database)
+{
+  $sensorId = $_GET['sensorId'];
+  $climateData['climateDataNow'] = getClimateDataNow($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_Database, $sensorId);
+  $climateData['climateDataDay'] = getClimateDataDay($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_Database, $sensorId);
+
+  echo json_encode($climateData);
+}
+
 function initClimateData($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_Database)
 {
   $climateData['sensorDataArr'] = getSensorData($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_Database);
-  //print_r( $sensorDataArr['sensorDataArr']['TSensor_ID'] );
   $climateData['climateDataNow'] = getClimateDataNow($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_Database, $climateData['sensorDataArr']['TSensor_ID']);
   $climateData['climateDataDay'] = getClimateDataDay($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_Database, $climateData['sensorDataArr']['TSensor_ID']);
 

@@ -18,6 +18,7 @@ class Climate extends Component {
       sensorData: [],
       climateDataNow: [],
       climateData: [],
+      chosenSensorId: 1,
     }
   }
 
@@ -38,7 +39,19 @@ class Climate extends Component {
   }
 
   sensorChanged(event){
-    console.log(event);
+      axios.get(URL,{
+        params: {
+          Call: 'reinitClimateData',
+          sensorId: event.target.value,
+        }
+      }).then((response)=>{
+        this.setState({
+          climateDataNow: response.data['climateDataNow'],
+          climateData: response.data['climateDataDay'],
+        });
+      }).catch((error) =>{
+        alert(error)
+      });
   }
 
   render() {
@@ -49,7 +62,7 @@ class Climate extends Component {
     return (
       <div className="climate">
         <h2>Select Sensor</h2>
-        <select id="sensorDropdown" onChange={this.sensorChanged} value={this.state.value}>
+        <select id="sensorDropdown" onChange={this.sensorChanged}>
            {this.state.sensorData.map(sensor =>
              <option key={sensor.TSensor_Name} value={sensor.TSensor_ID}>
                {sensor.TSensor_Name}
@@ -61,7 +74,7 @@ class Climate extends Component {
         </div>
 
         <Line data={{labels:labels,data:temperature}} headline="Temperatur"/>
-      <Line data={{labels:labels,data:humidity}} headline="Luftfeuchtigkeit"/>
+        <Line data={{labels:labels,data:humidity}} headline="Luftfeuchtigkeit"/>
 
       </div>
     );
