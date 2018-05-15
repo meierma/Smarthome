@@ -78,6 +78,15 @@ function getHistoryTempHum($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_D
   echo json_encode($arr);
 }
 
+function reinitClimateData($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_Database)
+{
+  $sensorId = $_GET['sensorId'];
+  $climateData['climateDataNow'] = getClimateDataNow($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_Database, $sensorId);
+  $climateData['climateDataDay'] = getClimateDataDay($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_Database, $sensorId);
+
+  echo json_encode($climateData);
+}
+
 function initClimateData($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_Database)
 {
   $climateData['sensorDataArr'] = getSensorData($MySQL_IP, $MySQL_Username, $MySQL_Password, $MySQL_Database);

@@ -74,7 +74,7 @@ class Climate extends Component {
         </div>
 
         <Line data={{labels:labels,data:temperature}} headline="Temperatur"/>
-      <Line data={{labels:labels,data:humidity}} headline="Luftfeuchtigkeit"/>
+        <Line data={{labels:labels,data:humidity}} headline="Luftfeuchtigkeit"/>
 
       </div>
     );
