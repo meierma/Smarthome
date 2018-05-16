@@ -6,11 +6,11 @@ import Line from './Line.js';
 
 import axios from 'axios'
 
-const URL = "http://192.168.0.152/php/TemperatureNew.php"
+const URL = "/php/TemperatureNew.php"
 
 class Climate extends Component {
-  constructor(){
-    super();
+  constructor(props){
+    super(props);
 
     this.sensorChanged = this.sensorChanged.bind(this);
 
@@ -18,7 +18,7 @@ class Climate extends Component {
       sensorData: [],
       climateDataNow: [],
       climateData: [],
-      chosenSensorId: 1,
+      currentSensor: '1',
     }
   }
 
@@ -38,20 +38,25 @@ class Climate extends Component {
     });
   }
 
-  sensorChanged(event){
-    axios.get(URL,{
-      params: {
-        Call: 'reinitClimateData',
-        sensorId: this.state.chosenSensorId,
-      }
-    }).then((response)=>{
-      this.setState({
-        climateDataNow: response.data['climateDataNow'],
-        climateData: response.data['climateDataDay'],
+  sensorChanged(event) {
+    console.log("sensor changed:" + event.target.value);
+    if(event.target.value != this.state.currentSensor) {
+      this.currentSensor = event.target.value;
+      axios.get(URL,{
+        params: {
+          Call: 'reinitClimateData',
+          sensorId: this.currentSensor,
+        }
+      }).then(response =>{
+        this.setState({
+          currentSensor: this.currentSensor,
+          climateDataNow: response.data['climateDataNow'],
+          climateData: response.data['climateDataDay'],
+        });
+      }).catch((error) =>{
+        alert(error)
       });
-    }).catch((error) =>{
-      alert(error)
-    });
+    }
   }
 
   render() {
@@ -62,11 +67,8 @@ class Climate extends Component {
     return (
       <div className="climate">
         <h2>Select Sensor</h2>
-        <select id="sensorDropdown" onChange={this.sensorChanged} value={this.state.chosenSensorId}>
-           {this.state.sensorData.map(sensor =>
-             <option key={sensor.TSensor_Name} value={sensor.TSensor_ID}>
-               {sensor.TSensor_Name}
-             </option>)}
+        <select id="sensorDropdown" onChange={this.sensorChanged} value={this.state.currentSensor}>
+           {this.state.sensorData.map(sensor => <option value={sensor.TSensor_ID}>{sensor.TSensor_Name}</option>)}
         </select>
         <div className="chart-pie flex-container">
           <Pie climateValue={this.state.climateDataNow.Temperature}/>

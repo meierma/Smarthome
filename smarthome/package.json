@@ -1,7 +1,8 @@
 {
   "name": "smarthome",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
+  "homepage": "https://smarthome.marcelmeier.me",
   "dependencies": {
     "axios": "^0.18.0",
     "chartist": "^0.11.0",
