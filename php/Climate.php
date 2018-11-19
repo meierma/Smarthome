@@ -138,20 +138,21 @@ class Climate
     {
         $con = $this->databaseConnection->connectDatabase();
 
-        $sql = "SELECT Timestamp , Temperature, Humidity FROM climateHistory WHERE TSensor_ID='$TSensor_ID' AND DATE(Timestamp) = CURDATE()";
+        $sql = "SELECT (SELECT HOUR(Timestamp) WHERE MINUTE(Timestamp) = '00' ) as Hour, Temperature, Humidity FROM climateHistory WHERE TSensor_ID='$TSensor_ID' AND Timestamp >= now()-INTERVAL 1 DAY ORDER BY Timestamp";        
+        //$sql = "SELECT Timestamp , Temperature, Humidity FROM climateHistory WHERE TSensor_ID='$TSensor_ID' AND DATE(Timestamp) = CURDATE()";
 
         $result = mysqli_query($con, $sql) or die (mysqli_error($con));
         while ($row = mysqli_fetch_array($result)) {
 
-            $Timestamp = $row['Timestamp'];
+            $Hour = $row['Hour'];
             $Temperature = $row['Temperature'];
             $Humidity = $row['Humidity'];
 
-            $Timestamp = stripcslashes(utf8_encode($Timestamp));
+            $Hour = stripcslashes(utf8_encode($Hour));
             $Temperature = stripcslashes(utf8_encode($Temperature));
             $Humidity = stripcslashes(utf8_encode($Humidity));
 
-            $arr[] = array('Timestamp' => $Timestamp, 'Temp' => $Temperature, 'Hum' => $Humidity);
+            $arr[] = array('Hour' => $Hour, 'Temp' => $Temperature, 'Hum' => $Humidity);
         }
         return $arr;
     }

@@ -19,11 +19,20 @@ class Pie extends React.Component {
             showLabel: true,
         };
 
+        let fillOptions = {
+            items: [{
+                content: '<i class="fa fa-tachometer"></i>',
+                position: 'bottom',
+                offsetY : 10,
+                offsetX: -2
+            }]
+        };
+
         let type = 'Pie';
         return (
             <div>
                 <ChartistGraph data={data} options={options} type={type}>
-                    <ChartistFillDonut/>
+                    <ChartistFillDonut options={fillOptions}/>
                 </ChartistGraph>
             </div>
         );

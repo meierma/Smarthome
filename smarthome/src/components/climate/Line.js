@@ -10,11 +10,14 @@ class Line extends React.Component {
         };
 
         let type = 'Line';
+        let options = {
+            showPoint: false,
+        };
 
         return (
             <div>
                 <h2>{this.props.headline}</h2>
-                <ChartistGraph data={simpleLineChartData} type={type}/>
+                <ChartistGraph data={simpleLineChartData} options={options} type={type}/>
             </div>
         )
     }
