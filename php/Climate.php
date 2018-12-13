@@ -75,7 +75,7 @@ class Climate
     public function resetClimateData()
     {
         $sensorId = $_GET['sensorId'];
-        $climateData['climateDataNow'] = $this->getClimateDataNow($sensorId);
+        $climateData['climateDataNow'] = $this->getClimateDataNow();
         $climateData['climateDataDay'] = $this->getClimateDataDay($sensorId);
 
         echo json_encode($climateData);
@@ -84,30 +84,43 @@ class Climate
     public function initClimateData()
     {
         $climateData['sensorDataArr'] = $this->getAllClimateSensorsFromDB();
-        $climateData['climateDataNow'] = $this->getClimateDataNow($climateData['sensorDataArr'][0][self::SENSOR_ID]);
+        $climateData['climateDataNow'] = $this->getClimateDataNow();
         $climateData['climateDataDay'] = $this->getClimateDataDay($climateData['sensorDataArr'][0][self::SENSOR_ID]);
 
         echo json_encode($climateData);
     }
 
-    public function getClimateDataNow($TSensor_ID)
+    public function getClimateDataNow()
     {
         $con = $this->databaseConnection->connectDatabase();
 
-        $sql = "SELECT Timestamp, Temperature, Humidity FROM climateHistory WHERE TSensor_ID='$TSensor_ID' ORDER BY Timestamp DESC Limit 1";
+        $sql = "SELECT sensors.TSensor_Name AS Name, 
+                       CL.Temperature, 
+                       CL.Humidity 
+                FROM   (SELECT climateHistory.* 
+                        FROM   (SELECT TSensor_ID, 
+                                       Max(Timestamp) AS maxTimestamp 
+                                FROM   climateHistory 
+                                GROUP  BY TSensor_ID) AS latest 
+                               INNER JOIN climateHistory 
+                                       ON climateHistory.TSensor_ID = latest.TSensor_ID 
+                                          AND climateHistory.Timestamp = latest.maxTimestamp) AS CL 
+                       INNER JOIN sensors 
+                               ON sensors.TSensor_ID = CL.TSensor_ID";
+
 
         $result = mysqli_query($con, $sql) or die (mysqli_error($con));
         while ($row = mysqli_fetch_array($result)) {
-            $Timestamp = $row['Timestamp'];
+            $Name = $row['Name'];
             $Temperature = $row[self::TEMPERATURE];
             $Humidity = $row[self::HUMIDITY];
 
-            $Timestamp = stripcslashes(utf8_encode($Timestamp));
+            $Name = stripcslashes(utf8_encode($Name));
             $Temperature = stripcslashes(utf8_encode($Temperature));
             $Humidity = stripcslashes(utf8_encode($Humidity));
 
 
-            $arr = array('Timestamp' => $Timestamp, self::TEMPERATURE => $Temperature, self::HUMIDITY => $Humidity);
+            $arr[] = array('Name' => $Name, self::TEMPERATURE => $Temperature, self::HUMIDITY => $Humidity);
         }
         return $arr;
     }
@@ -138,8 +151,8 @@ class Climate
     {
         $con = $this->databaseConnection->connectDatabase();
 
-        $sql = "SELECT (SELECT HOUR(Timestamp) WHERE MINUTE(Timestamp) = '00' ) as Hour, Temperature, Humidity FROM climateHistory WHERE TSensor_ID='$TSensor_ID' AND Timestamp >= now()-INTERVAL 1 DAY ORDER BY Timestamp";        
-        //$sql = "SELECT Timestamp , Temperature, Humidity FROM climateHistory WHERE TSensor_ID='$TSensor_ID' AND DATE(Timestamp) = CURDATE()";
+        $sql = "SELECT (SELECT HOUR(Timestamp) WHERE MINUTE(Timestamp) = '00' ) as Hour, Temperature, Humidity FROM climateHistory WHERE TSensor_ID='$TSensor_ID' AND Timestamp >= now()-INTERVAL 1 DAY ORDER BY Timestamp";
+        //$sql = "SELECT HOUR(Timestamp) AS Hour , Temperature, Humidity FROM climateHistory WHERE TSensor_ID='$TSensor_ID' AND DATE(Timestamp) = CURDATE()";
 
         $result = mysqli_query($con, $sql) or die (mysqli_error($con));
         while ($row = mysqli_fetch_array($result)) {
@@ -296,10 +309,10 @@ class Climate
             if ($Permission) {
                 $sql = "INSERT INTO climateHistory (TSensor_ID, Temperature, Humidity) VALUES ($TSensor_ID, $Temperature, $Humidity)";
                 mysqli_query($con, $sql) or die (mysqli_error($con));
-                echo("OK");
+                echo "OK";
 
             } else {
-                echo("Error no permission");
+                echo "Error no permission";
             }
         }
     }

@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import '../css/select.css';
 import '../css/chart.css';
-import Pie from './climate/Pie.js';
 import Line from './climate/Line.js';
 
 import axios from 'axios';
@@ -38,7 +37,6 @@ class Climate extends Component {
                 climateData: response.data['climateDataDay'],
             });
         }).catch((error) => {
-            alert(error);
         });
     }
 
@@ -62,7 +60,6 @@ class Climate extends Component {
                     climateData: response.data['climateDataDay'],
                 });
             }).catch((error) => {
-                alert(error);
             });
         }
     }
@@ -71,19 +68,30 @@ class Climate extends Component {
         const labels = this.state.climateData.map((entry) => entry.Hour);
         const humidity = this.state.climateData.map((entry) => entry.Hum);
         const temperature = this.state.climateData.map((entry) => entry.Temp);
+        const rows = this.state.climateDataNow.map((entry) =>
+            <tr>
+                <td>{entry.Name}</td><td>{entry.Temperature}</td><td>{entry.Humidity}</td>
+            </tr>
+        );
 
         return (
             <div className="climate">
+
+                <table className="climateTable">
+                    <tr>
+                        <th>Sensor</th><th>Temperature</th><th>Humidity</th>
+                    </tr>
+                    {rows}
+                </table>
+                {/*<div className="chart-pie flex-container">*/}
+                {/*<Pie climateValue={this.state.climateDataNow.Temperature}/>*/}
+                {/*<Pie climateValue={this.state.climateDataNow.Humidity}/>*/}
+                {/*</div>*/}
                 <h2>Select Sensor</h2>
                 <select id="sensorDropdown" onChange={this.sensorChanged} value={this.state.currentSensor}>
                     {this.state.sensorData.map(sensor =>
                         <option value={sensor.TSensor_ID}>{sensor.TSensor_Name}</option>)}
                 </select>
-                <div className="chart-pie flex-container">
-                    <Pie climateValue={this.state.climateDataNow.Temperature}/>
-                    <Pie climateValue={this.state.climateDataNow.Humidity}/>
-                </div>
-
                 <Line data={{labels: labels, data: temperature}} headline="Temperatur"/>
                 <Line data={{labels: labels, data: humidity}} headline="Luftfeuchtigkeit"/>
 
