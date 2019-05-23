@@ -22,5 +22,4 @@ if ($task == "getSensors") {
 } elseif ($task == "addTempHumData") {
     $climate->insertTemperatureAndHumidityIntoDB();
 }
-
-
+?>
