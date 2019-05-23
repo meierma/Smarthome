@@ -37,6 +37,7 @@ class Climate extends Component {
                 climateData: response.data['climateDataDay'],
             });
         }).catch((error) => {
+              alert(error);
         });
     }
 
@@ -60,6 +61,7 @@ class Climate extends Component {
                     climateData: response.data['climateDataDay'],
                 });
             }).catch((error) => {
+                alert(error);
             });
         }
     }

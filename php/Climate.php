@@ -94,18 +94,18 @@ class Climate
     {
         $con = $this->databaseConnection->connectDatabase();
 
-        $sql = "SELECT sensors.TSensor_Name AS Name, 
-                       CL.Temperature, 
-                       CL.Humidity 
-                FROM   (SELECT climateHistory.* 
-                        FROM   (SELECT TSensor_ID, 
-                                       Max(Timestamp) AS maxTimestamp 
-                                FROM   climateHistory 
-                                GROUP  BY TSensor_ID) AS latest 
-                               INNER JOIN climateHistory 
-                                       ON climateHistory.TSensor_ID = latest.TSensor_ID 
-                                          AND climateHistory.Timestamp = latest.maxTimestamp) AS CL 
-                       INNER JOIN sensors 
+        $sql = "SELECT sensors.TSensor_Name AS Name,
+                       CL.Temperature,
+                       CL.Humidity
+                FROM   (SELECT climateHistory.*
+                        FROM   (SELECT TSensor_ID,
+                                       Max(Timestamp) AS maxTimestamp
+                                FROM   climateHistory
+                                GROUP  BY TSensor_ID) AS latest
+                               INNER JOIN climateHistory
+                                       ON climateHistory.TSensor_ID = latest.TSensor_ID
+                                          AND climateHistory.Timestamp = latest.maxTimestamp) AS CL
+                       INNER JOIN sensors
                                ON sensors.TSensor_ID = CL.TSensor_ID";
 
 
@@ -317,3 +317,4 @@ class Climate
         }
     }
 }
+?>
