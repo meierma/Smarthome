@@ -63,3 +63,4 @@ Configfiles
 *.ini
 
 .idea/
+.vscode/

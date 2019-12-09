@@ -6,8 +6,14 @@ class Climate
     private $databaseConnection;
 
     const TEMPERATURE = 'Temperature';
+
     const HUMIDITY = 'Humidity';
-    const SENSOR_NAME = 'SensorName';
+
+    const SENSOR_ID = 'TSensor_ID';
+
+    const DEVICE_ID = 'Device_ID';
+
+    const SENSOR_NAME = 'TSensor_Name';
 
     public function __construct()
     {
@@ -20,18 +26,24 @@ class Climate
         echo json_encode($arr);
     }
 
-    public function getSensorNames()
+    public function getAllClimateSensorsFromDB()
     {
         $con = $this->databaseConnection->connectDatabase();
-        $sql = "SELECT DISTINCT SensorNames FROM ClimateData ORDER BY SensorNames";
+        $sql = "SELECT TSensor_ID, Device_ID, TSensor_Name, TSensor_Description FROM sensors";
 
         $result = mysqli_query($con, $sql) or die (mysqli_error($con));
         while ($row = mysqli_fetch_array($result)) {
-            $SensorName = $row[self::SENSOR_NAME];
+            $TSensor_ID = $row[self::SENSOR_ID];
+            $Device_ID = $row[self::DEVICE_ID];
+            $TSensor_Name = $row[self::SENSOR_NAME];
+            $TSensor_Description = $row['TSensor_Description'];
 
-            $SensorName = stripcslashes(utf8_encode($SensorName));
+            $TSensor_ID = stripcslashes(utf8_encode($TSensor_ID));
+            $Device_ID = stripcslashes(utf8_encode($Device_ID));
+            $TSensor_Name = stripcslashes(utf8_encode($TSensor_Name));
+            $TSensor_Description = stripcslashes(utf8_encode($TSensor_Description));
 
-            $arr[] = array(self::SENSOR_NAME => $SensorName);
+            $arr[] = array(self::SENSOR_ID => $TSensor_ID, self::DEVICE_ID => $Device_ID, self::SENSOR_NAME => $TSensor_Name, 'TSensor_Description' => $TSensor_Description);
 
         }
         return $arr;
@@ -69,7 +81,7 @@ class Climate
 
     public function initClimateData()
     {
-        $climateData['sensorDataArr'] = $this->getSensorNames();
+        $climateData['sensorDataArr'] = $this->getAllClimateSensorsFromDB();
         $climateData['climateDataNow'] = $this->getClimateDataNow();
         $climateData['climateDataDay'] = $this->getClimateDataDay($climateData['sensorDataArr'][0][self::SENSOR_ID]);
 
@@ -80,20 +92,33 @@ class Climate
     {
         $con = $this->databaseConnection->connectDatabase();
 
-        $sql = "SELECT DISTINCT ON (SensorName) SensorName, Temperature, Humidity FROM climateData ORDER BY sensorID, timestamp DESC;
+        $sql = "SELECT sensors.TSensor_Name AS Name,
+                       CL.Temperature,
+                       CL.Humidity
+                FROM   (SELECT climateHistory.*
+                        FROM   (SELECT TSensor_ID,
+                                       Max(Timestamp) AS maxTimestamp
+                                FROM   climateHistory
+                                GROUP  BY TSensor_ID) AS latest
+                               INNER JOIN climateHistory
+                                       ON climateHistory.TSensor_ID = latest.TSensor_ID
+                                          AND climateHistory.Timestamp = latest.maxTimestamp) AS CL
+                       INNER JOIN sensors
+                               ON sensors.TSensor_ID = CL.TSensor_ID";
+
 
         $result = mysqli_query($con, $sql) or die (mysqli_error($con));
         while ($row = mysqli_fetch_array($result)) {
-            $SensorName = $row[self::SENSOR_NAME];
+            $Name = $row['Name'];
             $Temperature = $row[self::TEMPERATURE];
             $Humidity = $row[self::HUMIDITY];
 
-            $SensorName = stripcslashes(utf8_encode($SensorName));
+            $Name = stripcslashes(utf8_encode($Name));
             $Temperature = stripcslashes(utf8_encode($Temperature));
             $Humidity = stripcslashes(utf8_encode($Humidity));
 
 
-            $arr[] = array('Name' => $SensorName, self::TEMPERATURE => $Temperature, self::HUMIDITY => $Humidity);
+            $arr[] = array('Name' => $Name, self::TEMPERATURE => $Temperature, self::HUMIDITY => $Humidity);
         }
         return $arr;
     }
@@ -261,15 +286,32 @@ class Climate
 
     public function insertTemperatureAndHumidityIntoDB()
     {
-        $SensorName = $_GET[self::SENSOR_NAME];
+
+        $Device_ID = $this->getDeviceIDByIP();
+        $TSensor_ID = $_GET[self::SENSOR_ID];
         $Temperature = $_GET[self::TEMPERATURE];
         $Humidity = $_GET[self::HUMIDITY];
 
-        if ((!empty($SensorName)) && (!empty($Temperature)) && (!empty($Humidity))) {
+        if ((!empty($TSensor_ID)) && (!empty($Temperature)) && (!empty($Humidity))) {
             $con = $this->databaseConnection->connectDatabase();
 
-            $sql = "INSERT INTO climateHistory (SensorName, Temperature, Humidity) VALUES ($SensorName, $Temperature, $Humidity)";
-            mysqli_query($con, $sql) or die (mysqli_error($con));
+            $sql = "SELECT TSensor_ID FROM sensors WHERE Device_ID = $Device_ID";
+            $result = mysqli_query($con, $sql) or die (mysqli_error($con));
+            $Permission = false;
+            while ($row = mysqli_fetch_array($result)) {
+                $TSID = $row[self::SENSOR_ID];
+                if ($TSID == $TSensor_ID && !$Permission) {
+                    $Permission = true;
+                }
+            }
+            if ($Permission) {
+                $sql = "INSERT INTO climateHistory (TSensor_ID, Temperature, Humidity) VALUES ($TSensor_ID, $Temperature, $Humidity)";
+                mysqli_query($con, $sql) or die (mysqli_error($con));
+                echo "OK";
+
+            } else {
+                echo "Error no permission";
+            }
         }
     }
 }
