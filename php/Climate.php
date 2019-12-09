@@ -259,7 +259,7 @@ class Climate
         echo json_encode($arr);
     }
 
-    public function insertTemperatureAndHumidityIntoDB()
+    public function insertClimateDataIntoDB()
     {
         $SensorName = $_GET[self::SENSOR_NAME];
         $Temperature = $_GET[self::TEMPERATURE];
