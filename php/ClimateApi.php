@@ -19,7 +19,7 @@ if ($task == "getSensors") {
     $climate->resetClimateData();
 } elseif ($task == "getRegTSensors") {
     $climate->getRegTSensors();
-} elseif ($task == "addTempHumData") {
-    $climate->insertTemperatureAndHumidityIntoDB();
+} elseif ($task == "addClimateData") {
+    $climate->insertClimateDataIntoDB();
 }
 ?>
