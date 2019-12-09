@@ -4,7 +4,7 @@ header('Access-Control-Allow-Credentials: true');
 ini_set('display_errors', 'On');
 error_reporting(E_ALL);
 
-require_once("Climate.php");
+require_once("ClimateNEW.php");
 
 $climate = new Climate();
 $task = $_GET['task'];

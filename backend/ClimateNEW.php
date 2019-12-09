@@ -80,7 +80,7 @@ class Climate
     {
         $con = $this->databaseConnection->connectDatabase();
 
-        $sql = "SELECT DISTINCT ON (SensorName) SensorName, Temperature, Humidity FROM climateData ORDER BY sensorID, timestamp DESC;
+        $sql = "SELECT DISTINCT ON (SensorName) SensorName, Temperature, Humidity FROM climateData ORDER BY sensorID, timestamp DESC";
 
         $result = mysqli_query($con, $sql) or die (mysqli_error($con));
         while ($row = mysqli_fetch_array($result)) {
@@ -268,7 +268,7 @@ class Climate
         if ((!empty($SensorName)) && (!empty($Temperature)) && (!empty($Humidity))) {
             $con = $this->databaseConnection->connectDatabase();
 
-            $sql = "INSERT INTO climateHistory (SensorName, Temperature, Humidity) VALUES ($SensorName, $Temperature, $Humidity)";
+            $sql = "INSERT INTO climateData (SensorName, Temperature, Humidity) VALUES ('$SensorName', $Temperature, $Humidity)";
             mysqli_query($con, $sql) or die (mysqli_error($con));
         }
     }
