@@ -9,16 +9,10 @@ require_once("ClimateNEW.php");
 $climate = new Climate();
 $task = $_GET['task'];
 
-if ($task == "getSensors") {
-    $climate->getAllClimateSensorsFromDBAsJson();
-} elseif ($task == "getHistoryTempHum") {
-    $climate->getClimateHistory();
-} elseif ($task == "initClimateData") {
+if ($task == "initClimateData") {
     $climate->initClimateData();
 } elseif ($task == "resetClimateData") {
     $climate->resetClimateData();
-} elseif ($task == "getRegTSensors") {
-    $climate->getRegTSensors();
 } elseif ($task == "addClimateData") {
     $climate->insertClimateDataIntoDB();
 }

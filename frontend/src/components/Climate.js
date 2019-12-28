@@ -5,7 +5,7 @@ import Line from './climate/Line.js';
 
 import axios from 'axios';
 
-const URL = "/php/ClimateApi.php";
+const URL = "/php/ClimateApiNEW.php";
 
 class Climate extends Component {
     constructor(props) {
@@ -17,7 +17,7 @@ class Climate extends Component {
             sensorData: [],
             climateDataNow: [],
             climateData: [],
-            currentSensor: '1',
+            currentSensor: "Wohnzimmer",
         }
     }
 
@@ -68,11 +68,11 @@ class Climate extends Component {
 
     render() {
         const labels = this.state.climateData.map((entry) => entry.Hour);
-        const humidity = this.state.climateData.map((entry) => entry.Hum);
-        const temperature = this.state.climateData.map((entry) => entry.Temp);
+        const humidity = this.state.climateData.map((entry) => entry.Humidity);
+        const temperature = this.state.climateData.map((entry) => entry.Temperature);
         const rows = this.state.climateDataNow.map((entry) =>
             <tr>
-                <td>{entry.Name}</td><td>{entry.Temperature}</td><td>{entry.Humidity}</td>
+                <td>{entry.SensorName}</td><td>{entry.Temperature}</td><td>{entry.Humidity}</td>
             </tr>
         );
 
@@ -92,7 +92,7 @@ class Climate extends Component {
                 <h2>Select Sensor</h2>
                 <select id="sensorDropdown" onChange={this.sensorChanged} value={this.state.currentSensor}>
                     {this.state.sensorData.map(sensor =>
-                        <option value={sensor.TSensor_ID}>{sensor.TSensor_Name}</option>)}
+                        <option value={sensor.SensorName}>{sensor.SensorName}</option>)}
                 </select>
                 <Line data={{labels: labels, data: temperature}} headline="Temperatur"/>
                 <Line data={{labels: labels, data: humidity}} headline="Luftfeuchtigkeit"/>

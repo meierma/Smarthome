@@ -14,18 +14,16 @@ class Climate
         $this->databaseConnection = new DatabaseConnection();
     }
 
-    public function getAllClimateSensorsFromDBAsJson()
-    {
-        $arr = $this->getAllClimateSensorsFromDB();
-        echo json_encode($arr);
-    }
-
     public function getSensorNames()
     {
         $con = $this->databaseConnection->connectDatabase();
-        $sql = "SELECT DISTINCT SensorNames FROM ClimateData ORDER BY SensorNames";
+        $sql = "SELECT DISTINCT SensorName FROM climateData ORDER BY SensorName DESC";
 
         $result = mysqli_query($con, $sql) or die (mysqli_error($con));
+
+        if(mysqli_num_rows($result)==0)
+            return array();
+
         while ($row = mysqli_fetch_array($result)) {
             $SensorName = $row[self::SENSOR_NAME];
 
@@ -35,27 +33,6 @@ class Climate
 
         }
         return $arr;
-    }
-
-    public function getClimateHistory()
-    {
-        $range = $_GET['range'];
-        $sensorId = $_GET['sensorId'];
-        $arr = array();
-
-        if ($range == "now") {
-            $arr = $this->getClimateDataNow($sensorId);
-        } else if ($range == "year") {
-            $arr = $this->getClimateDataYear($sensorId);
-        } else if ($range == "month") {
-            $arr = $this->getClimateDataMonth($sensorId);
-        } else if ($range == "week") {
-            $arr = $this->getClimateDataWeek($sensorId);
-        } else if ($range == "day") {
-            $arr = $this->getClimateDataDay($sensorId);
-        }
-
-        echo json_encode($arr);
     }
 
     public function resetClimateData()
@@ -71,7 +48,7 @@ class Climate
     {
         $climateData['sensorDataArr'] = $this->getSensorNames();
         $climateData['climateDataNow'] = $this->getClimateDataNow();
-        $climateData['climateDataDay'] = $this->getClimateDataDay($climateData['sensorDataArr'][0][self::SENSOR_ID]);
+        $climateData['climateDataDay'] = $this->getClimateDataDay($climateData['sensorDataArr'][0][self::SENSOR_NAME]);
 
         echo json_encode($climateData);
     }
@@ -80,9 +57,13 @@ class Climate
     {
         $con = $this->databaseConnection->connectDatabase();
 
-        $sql = "SELECT DISTINCT ON (SensorName) SensorName, Temperature, Humidity FROM climateData ORDER BY sensorID, timestamp DESC";
+        $sql = "SELECT SensorName, Humidity, Temperature FROM climateData WHERE ID IN ( SELECT MAX(ID) FROM climateData GROUP BY SensorName )";
 
         $result = mysqli_query($con, $sql) or die (mysqli_error($con));
+
+        if(mysqli_num_rows($result)==0)
+            return array();
+
         while ($row = mysqli_fetch_array($result)) {
             $SensorName = $row[self::SENSOR_NAME];
             $Temperature = $row[self::TEMPERATURE];
@@ -93,170 +74,35 @@ class Climate
             $Humidity = stripcslashes(utf8_encode($Humidity));
 
 
-            $arr[] = array('Name' => $SensorName, self::TEMPERATURE => $Temperature, self::HUMIDITY => $Humidity);
+            $arr[] = array(self::SENSOR_NAME => $SensorName, self::TEMPERATURE => $Temperature, self::HUMIDITY => $Humidity);
         }
         return $arr;
     }
 
-    public function getClimateDataDayAverage($TSensor_ID)
+    public function getClimateDataDay($SensorName)
     {
         $con = $this->databaseConnection->connectDatabase();
 
-        $sql = "SELECT HOUR(Timestamp) as 'Hour', AVG(Temperature) as 'Temp', AVG(Humidity) as 'Hum' FROM climateHistory WHERE TSensor_ID='$TSensor_ID' AND DATE(Timestamp) = CURDATE() GROUP BY HOUR(Timestamp)";
+        $sql = "SELECT (SELECT HOUR(Timestamp) WHERE MINUTE(Timestamp) < 10) as Hour, Temperature, Humidity FROM climateData WHERE SensorName='$SensorName' AND Timestamp >= now()-INTERVAL 1 DAY ORDER BY Timestamp";
 
         $result = mysqli_query($con, $sql) or die (mysqli_error($con));
+
+        if(mysqli_num_rows($result)==0)
+            return array();
+
         while ($row = mysqli_fetch_array($result)) {
 
             $Hour = $row['Hour'];
-            $Temp = $row['Temp'];
-            $Hum = $row['Hum'];
-
-            $Hour = stripcslashes(utf8_encode($Hour));
-            $Temp = stripcslashes(utf8_encode($Temp));
-            $Hum = stripcslashes(utf8_encode($Hum));
-
-            $arr[] = array('Hour' => $Hour, 'Temp' => $Temp, 'Hum' => $Hum);
-        }
-        return $arr;
-    }
-
-    public function getClimateDataDay($TSensor_ID)
-    {
-        $con = $this->databaseConnection->connectDatabase();
-
-        $sql = "SELECT (SELECT HOUR(Timestamp) WHERE MINUTE(Timestamp) = '00' ) as Hour, Temperature, Humidity FROM climateHistory WHERE TSensor_ID='$TSensor_ID' AND Timestamp >= now()-INTERVAL 1 DAY ORDER BY Timestamp";
-        //$sql = "SELECT HOUR(Timestamp) AS Hour , Temperature, Humidity FROM climateHistory WHERE TSensor_ID='$TSensor_ID' AND DATE(Timestamp) = CURDATE()";
-
-        $result = mysqli_query($con, $sql) or die (mysqli_error($con));
-        while ($row = mysqli_fetch_array($result)) {
-
-            $Hour = $row['Hour'];
-            $Temperature = $row['Temperature'];
-            $Humidity = $row['Humidity'];
+            $Temperature = $row[self::TEMPERATURE];
+            $Humidity = $row[self::HUMIDITY];
 
             $Hour = stripcslashes(utf8_encode($Hour));
             $Temperature = stripcslashes(utf8_encode($Temperature));
             $Humidity = stripcslashes(utf8_encode($Humidity));
 
-            $arr[] = array('Hour' => $Hour, 'Temp' => $Temperature, 'Hum' => $Humidity);
+            $arr[] = array('Hour' => $Hour, self::TEMPERATURE => $Temperature, self::HUMIDITY => $Humidity);
         }
         return $arr;
-    }
-
-    public function getClimateDataWeek($TSensor_ID)
-    {
-        $con = $this->databaseConnection->connectDatabase();
-
-        $sql = "SELECT DAY(`Timestamp`) as \"Day\", AVG(`Temperature`) as \"Temp\", AVG(`Humidity`) as \"Hum\" FROM `climateHistory` WHERE `TSensor_ID` = '$TSensor_ID' AND WEEK(`Timestamp`) = WEEK(CURDATE()) GROUP BY DAY(`Timestamp`), MONTH('Timestamp')";
-
-        $result = mysqli_query($con, $sql) or die (mysqli_error($con));
-        while ($row = mysqli_fetch_array($result)) {
-            $Day = $row['Day'];
-            $Temp = $row['Temp'];
-            $Hum = $row['Hum'];
-
-            $Day = stripcslashes(utf8_encode($Day));
-            $Temp = stripcslashes(utf8_encode($Temp));
-            $Hum = stripcslashes(utf8_encode($Hum));
-
-            $arr[] = array('Day' => $Day, 'Temp' => $Temp, "Hum" => $Hum);
-        }
-        return $arr;
-    }
-
-    public function getClimateDataMonth($TSensor_ID)
-    {
-        $con = $this->databaseConnection->connectDatabase();
-
-        $sql = "SELECT WEEK(`Timestamp`) as \"Week\", AVG(`Temperature`) as \"Temp\", AVG(`Humidity`) as \"Hum\" FROM `climateHistory` WHERE `TSensor_ID` = '$TSensor_ID' AND MONTH(`Timestamp`) = MONTH(CURDATE()) GROUP BY WEEK(`Timestamp`)";
-
-        $result = mysqli_query($con, $sql) or die (mysqli_error($con));
-        while ($row = mysqli_fetch_array($result)) {
-            $Week = $row['Week'];
-            $Temp = $row['Temp'];
-            $Hum = $row['Hum'];
-
-            $Week = stripcslashes(utf8_encode($Week));
-            $Temp = stripcslashes(utf8_encode($Temp));
-            $Hum = stripcslashes(utf8_encode($Hum));
-
-            $arr[] = array('Week' => $Week, 'Temp' => $Temp, "Hum" => $Hum);
-        }
-        return $arr;
-    }
-
-    public function getClimateDataYear($TSensor_ID)
-    {
-        $con = $this->databaseConnection->connectDatabase();
-
-        $sql = "SELECT MONTH(Timestamp) as \"Month\", AVG(`Temperature`) as \"Temp\" , AVG(`Humidity`) as \"Hum\" FROM `climateHistory` WHERE `TSensor_ID` = '$TSensor_ID' AND YEAR(`Timestamp`) = YEAR(CURDATE()) GROUP BY MONTH(`Timestamp`)";
-
-        $result = mysqli_query($con, $sql) or die (mysqli_error($con));
-        while ($row = mysqli_fetch_array($result)) {
-            $Month = $row['Month'];
-            $Temp = $row['Temp'];
-            $Hum = $row['Hum'];
-
-            $Month = stripcslashes(utf8_encode($Month));
-            $Temp = stripcslashes(utf8_encode($Temp));
-            $Hum = stripcslashes(utf8_encode($Hum));
-
-            $arr[] = array('Month' => $Month, 'Temp' => $Temp, "Hum" => $Hum);
-        }
-        return $arr;
-    }
-
-    public function getDeviceIDByIP()
-    {
-        $IP = $this->getRealIpAddr();
-        $con = $this->databaseConnection->connectDatabase();
-        $sql = "SELECT Device_ID FROM devices WHERE IP_Adress = '$IP'";
-
-        $result = mysqli_query($con, $sql) or die (mysqli_error($con));
-        $Device_ID = "";
-        while ($row = mysqli_fetch_array($result)) {
-            $Device_ID = $row[self::DEVICE_ID];
-            $Device_ID = stripcslashes(utf8_encode($Device_ID));
-        }
-        return $Device_ID;
-    }
-
-    public function getRealIpAddr()
-    {
-        if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
-            $ip = $_SERVER['HTTP_CLIENT_IP'];
-        } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-            $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
-        } elseif (!empty($_SERVER['REMOTE_ADDR'])) {
-            $ip = $_SERVER['REMOTE_ADDR'];
-        } else {
-            $ip = "UNKNOWN";
-        }
-        return $ip;
-    }
-
-    public function getRegTSensors()
-    {
-        $Device_ID = $this->getDeviceIDByIP();
-        $con = $this->databaseConnection->connectDatabase();
-        $sql = "SELECT TSensor_ID, TSensor_Name, GPIO, Sensor FROM sensors WHERE Device_ID = '$Device_ID'";
-
-        $result = mysqli_query($con, $sql) or die (mysqli_error($con));
-        while ($row = mysqli_fetch_array($result)) {
-
-            $TSensor_ID = $row[self::SENSOR_ID];
-            $TSensor_Name = $row[self::SENSOR_NAME];
-            $GPIO = $row['GPIO'];
-            $Sensor = $row['Sensor'];
-
-            $TSensor_ID = stripcslashes(utf8_encode($TSensor_ID));
-            $TSensor_Name = stripcslashes(utf8_encode($TSensor_Name));
-            $GPIO = stripcslashes(utf8_encode($GPIO));
-            $Sensor = stripcslashes(utf8_encode($Sensor));
-
-            $arr[] = array(self::SENSOR_ID => $TSensor_ID, self::SENSOR_NAME => $TSensor_Name, 'GPIO' => $GPIO, 'Sensor' => $Sensor);
-        }
-        echo json_encode($arr);
     }
 
     public function insertClimateDataIntoDB()
