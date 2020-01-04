@@ -83,7 +83,7 @@ class Climate
     {
         $con = $this->databaseConnection->connectDatabase();
 
-        $sql = "SELECT (SELECT HOUR(Timestamp) WHERE MINUTE(Timestamp) < 10) as Hour, Temperature, Humidity FROM climateData WHERE SensorName='$SensorName' AND Timestamp >= now()-INTERVAL 1 DAY ORDER BY Timestamp";
+        $sql = "SELECT (SELECT HOUR(Timestamp)) as Hour, Temperature, Humidity FROM climateData WHERE SensorName='$SensorName' AND Timestamp >= now()-INTERVAL 1 DAY ORDER BY Timestamp";
 
         $result = mysqli_query($con, $sql) or die (mysqli_error($con));
 

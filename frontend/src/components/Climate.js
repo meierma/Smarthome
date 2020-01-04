@@ -67,7 +67,11 @@ class Climate extends Component {
     }
 
     render() {
-        const labels = this.state.climateData.map((entry) => entry.Hour);
+        const labels = this.state.climateData.map((entry, index, array) => {
+            if(index > 0 && array[index-1].Hour != entry.Hour) 
+                return entry.Hour;
+            return null;
+        });
         const humidity = this.state.climateData.map((entry) => entry.Humidity);
         const temperature = this.state.climateData.map((entry) => entry.Temperature);
         const rows = this.state.climateDataNow.map((entry) =>
