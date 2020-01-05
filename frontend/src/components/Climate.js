@@ -98,8 +98,8 @@ class Climate extends Component {
                     {this.state.sensorData.map(sensor =>
                         <option value={sensor.SensorName}>{sensor.SensorName}</option>)}
                 </select>
-                <Line data={{labels: labels, data: temperature}} headline="Temperatur"/>
-                <Line data={{labels: labels, data: humidity}} headline="Luftfeuchtigkeit"/>
+                <Line data={{labels: labels, data: temperature}} headline="Temperatur" showThresholds={false}/>
+                <Line data={{labels: labels, data: humidity}} headline="Luftfeuchtigkeit" showThresholds={true}/>
 
             </div>
         );
