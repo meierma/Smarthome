@@ -32,12 +32,12 @@ class App extends Component {
                     <div class="circle c-2" onClick={() => this.reloadContent(PAGE_LIGHT)}>
                         <span className="link"></span>
                     </div>
-                    <div class="circle c-3">
+                    {/* <div class="circle c-3">
                         <span className="link"></span>
                     </div>
                     <div class="circle c-4">
                         <span className="link"></span>
-                    </div>
+                    </div> */}
                     <div id="click" class="circle c-5" onClick={() => document.getElementById("nav").classList.toggle("closed")}>
                         <span></span>
                     </div>

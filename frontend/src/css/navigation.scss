@@ -1,5 +1,5 @@
 $radius: 15em;
-$numberOfLinks: 2;
+$numberOfLinks: 3;
 
 .circle {
   z-index: 1;
@@ -89,36 +89,36 @@ $numberOfLinks: 2;
 .c-1 {
   background: #49a7ff;
   transition-delay: 0.1s, 0.1s, 0.1s;
-  transform: rotate((90deg/5) * 1);
+  transform: rotate((90deg/$numberOfLinks) * 1);
   .link::before {
-    transform: rotate((90deg/5) * -1);
-    content: "lightbulb_outline";
+    transform: rotate((90deg/$numberOfLinks) * -1);
+    content: "whatshot";
   }
 }
 .c-2 {
   background: #5aafff;
   transition-delay: 0.2s, 0.2s, 0.2s;
-  transform: rotate((90deg/5) * 2);
+  transform: rotate((90deg/$numberOfLinks) * 2);
   .link::before {
-    transform: rotate((90deg/5) * -2);
+    transform: rotate((90deg/$numberOfLinks) * -2);
     content: "lightbulb_outline";
   }
 }
 .c-3 {
   transition-delay: 0.3s, 0.3s, 0.3s;
   background: #66b4fd;
-  transform: rotate((90deg/5) * 3);
+  transform: rotate((90deg/$numberOfLinks) * 3);
   .link::before {
-    transform: rotate((90deg/5) * -3);
+    transform: rotate((90deg/$numberOfLinks) * -3);
     content: "lightbulb_outline";
   }
 }
 .c-4 {
   transition-delay: 0.4s, 0.4s, 0.4s;
   background: #74c5fc;
-  transform: rotate((90deg/5) * 4);
+  transform: rotate((90deg/$numberOfLinks) * 4);
   .link::before {
-    transform: rotate((90deg/5) * -4);
+    transform: rotate((90deg/$numberOfLinks) * -4);
     content: "lightbulb_outline";
   }
 }
