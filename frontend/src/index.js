@@ -4,6 +4,7 @@ import App from './App';
 import registerServiceWorker from './registerServiceWorker';
 
 import './css/style.css';
+import './css/navigation.css';
 
-ReactDOM.render(<App/>, document.getElementById('root'));
+ReactDOM.render(<App />, document.getElementById('root'));
 registerServiceWorker();
