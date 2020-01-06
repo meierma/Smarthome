@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
-import '../css/select.css';
-import '../css/chart.css';
+import '../css/select.scss';
+import '../css/chart.scss';
 import Line from './climate/Line.js';
 
 import axios from 'axios';
@@ -93,7 +93,7 @@ class Climate extends Component {
                 {/*<Pie climateValue={this.state.climateDataNow.Temperature}/>*/}
                 {/*<Pie climateValue={this.state.climateDataNow.Humidity}/>*/}
                 {/*</div>*/}
-                <h2>Select Sensor</h2>
+                <h2>Sensor</h2>
                 <select id="sensorDropdown" onChange={this.sensorChanged} value={this.state.currentSensor}>
                     {this.state.sensorData.map(sensor =>
                         <option value={sensor.SensorName}>{sensor.SensorName}</option>)}

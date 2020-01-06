@@ -3,8 +3,8 @@ import ReactDOM from 'react-dom';
 import App from './App';
 import registerServiceWorker from './registerServiceWorker';
 
-import './css/style.css';
-import './css/navigation.css';
+import './css/style.scss';
+import './css/navigation.scss';
 
 ReactDOM.render(<App />, document.getElementById('root'));
 registerServiceWorker();
