@@ -1,5 +1,4 @@
 import React from 'react';
-import Chartist from 'chartist';
 import ChartistGraph from 'react-chartist';
 
 class Line extends React.Component {
