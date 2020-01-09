@@ -22,15 +22,21 @@ header {
   font-size: 10vw;
   margin: 10% auto;
   color: #fff;
-  text-align: center; 
-}
-
-h2{
-  color: white;
   text-align: center;
 }
 
-.climateTable, #sensorDropdown {
+h2 {
+  color: white;
+  text-align: center;
+  font-weight: 100;
+}
+
+#sensorDropdown {
+  background: white;
+}
+
+.climateTable,
+#sensorDropdown {
   width: 100%;
   text-align: center;
   margin-bottom: 10%;
