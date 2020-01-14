@@ -1,4 +1,4 @@
-.chart-pie{
+.chart-pie {
   padding-top: 10%;
   width: 100%;
 }
@@ -7,23 +7,33 @@
   stroke-width: 2px;
 }
 
-.ct-line.ct-threshold-above, .ct-point.ct-threshold-above, .ct-bar.ct-threshold-above {
+.ct-line.ct-threshold-above,
+.ct-point.ct-threshold-above,
+.ct-bar.ct-threshold-above {
   stroke: #fd0000;
 }
 
-.ct-line.ct-threshold-area-0, .ct-point.ct-threshold-area-0, .ct-bar.ct-threshold-area-0{
+.ct-line.ct-threshold-area-0,
+.ct-point.ct-threshold-area-0,
+.ct-bar.ct-threshold-area-0 {
   stroke: #e6ff00;
 }
 
-.ct-line.ct-threshold-area-1, .ct-point.ct-threshold-area-1, .ct-bar.ct-threshold-area-1{
+.ct-line.ct-threshold-area-1,
+.ct-point.ct-threshold-area-1,
+.ct-bar.ct-threshold-area-1 {
   stroke: #2aff00;
 }
 
-.ct-line.ct-threshold-area-2, .ct-point.ct-threshold-area-2, .ct-bar.ct-threshold-area-2{
+.ct-line.ct-threshold-area-2,
+.ct-point.ct-threshold-area-2,
+.ct-bar.ct-threshold-area-2 {
   stroke: #e6ff00;
 }
 
-.ct-line.ct-threshold-below, .ct-point.ct-threshold-below, .ct-bar.ct-threshold-below {
+.ct-line.ct-threshold-below,
+.ct-point.ct-threshold-below,
+.ct-bar.ct-threshold-below {
   stroke: #fd0000;
 }
 
@@ -31,18 +41,26 @@
   fill: #fd0000;
 }
 
-.ct-area.ct-threshold-area-0{
+.ct-area.ct-threshold-area-0 {
   fill: #e6ff00;
 }
 
-.ct-area.ct-threshold-area-1{
+.ct-area.ct-threshold-area-1 {
   fill: #2aff00;
 }
 
-.ct-area.ct-threshold-area-2{
+.ct-area.ct-threshold-area-2 {
   fill: #e6ff00;
 }
 
 .ct-area.ct-threshold-below {
   fill: #fd0000;
+}
+
+.ct-grid {
+  stroke: #555555;
+}
+
+.ct-label{
+  color: #FFFFFF
 }

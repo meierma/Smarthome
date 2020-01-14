@@ -87,7 +87,7 @@ $numberOfLinks: 3;
   }
 }
 .c-1 {
-  background: #49a7ff;
+  background: #505050;
   transition-delay: 0.1s, 0.1s, 0.1s;
   transform: rotate((90deg/$numberOfLinks) * 1);
   .link::before {
@@ -96,7 +96,7 @@ $numberOfLinks: 3;
   }
 }
 .c-2 {
-  background: #5aafff;
+  background: #5f5f5f;
   transition-delay: 0.2s, 0.2s, 0.2s;
   transform: rotate((90deg/$numberOfLinks) * 2);
   .link::before {
@@ -106,7 +106,7 @@ $numberOfLinks: 3;
 }
 .c-3 {
   transition-delay: 0.3s, 0.3s, 0.3s;
-  background: #66b4fd;
+  background: #616161;
   transform: rotate((90deg/$numberOfLinks) * 3);
   .link::before {
     transform: rotate((90deg/$numberOfLinks) * -3);
@@ -123,6 +123,6 @@ $numberOfLinks: 3;
   }
 }
 .c-5 {
-  background: #4996ff;
+  background: #4a4a4a;
   z-index: 0;
 }
