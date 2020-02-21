@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
-import '../css/select.scss';
-import '../css/chart.scss';
+import '../scss/select.scss';
+import '../scss/chart.scss';
 import Line from './climate/Line.js';
 
 import axios from 'axios';
@@ -84,10 +84,13 @@ class Climate extends Component {
             <div className="climate">
 
                 <table className="climateTable">
+                    <tbody>
+
                     <tr>
                         <th>Sensor</th><th>Temperature</th><th>Humidity</th>
                     </tr>
                     {rows}
+                    </tbody>
                 </table>
                 {/*<div className="chart-pie flex-container">*/}
                 {/*<Pie climateValue={this.state.climateDataNow.Temperature}/>*/}

@@ -25,11 +25,11 @@ class App extends Component {
                 <header>
                     Smarthome
                 </header>
-                <section id="nav" class="wrapcircles closed">
-                    <div class="circle c-1" onClick={() => this.reloadContent(PAGE_CLIMATE)}>
+                <section id="nav" className="wrapcircles closed">
+                    <div className="circle c-1" onClick={() => this.reloadContent(PAGE_CLIMATE)}>
                         <span className="link"></span>
                     </div>
-                    <div class="circle c-2" onClick={() => this.reloadContent(PAGE_LIGHT)}>
+                    <div className="circle c-2" onClick={() => this.reloadContent(PAGE_LIGHT)}>
                         <span className="link"></span>
                     </div>
                     {/* <div class="circle c-3">
@@ -38,7 +38,7 @@ class App extends Component {
                     <div class="circle c-4">
                         <span className="link"></span>
                     </div> */}
-                    <div id="click" class="circle c-5" onClick={() => document.getElementById("nav").classList.toggle("closed")}>
+                    <div id="click" className="circle c-5" onClick={() => document.getElementById("nav").classList.toggle("closed")}>
                         <span></span>
                     </div>
                 </section>
